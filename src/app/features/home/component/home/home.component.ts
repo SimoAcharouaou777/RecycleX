@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
+import {AuthService} from "../../../auth/services/auth.service";
 
 @Component({
   selector: 'app-home',
@@ -11,5 +12,10 @@ import {RouterLink} from "@angular/router";
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  constructor(private authService: AuthService, private router: Router) { }
 
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

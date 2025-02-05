@@ -26,6 +26,7 @@ export class AuthService {
     const user = users.find(u => u.email === credentials.email && u.password === credentials.password);
     if(user) {
       console.log('Login successful for ', credentials.email);
+      localStorage.setItem('currentUser', JSON.stringify(user));
       return of(true);
     } else {
       console.log('Invalid login attempt for ', credentials.email);
@@ -40,6 +41,14 @@ export class AuthService {
     localStorage.setItem(this.localStorageKey, JSON.stringify(users));
     console.log('User registered successfully', user);
     return of(true);
+  }
+
+  logout(): void {
+    localStorage.removeItem('currentUser');
+    console.log('User logged out');
+  }
+  isAuthenticated(): boolean {
+    return localStorage.getItem('currentUser') !== null;
   }
 
   updateProfile(updatedUser: User): Observable<boolean> {
@@ -60,7 +69,7 @@ export class AuthService {
     if(!hasCollector) {
       const collectors: User[] = [
         {
-          email: 'collector1@example.com',
+          email: 'simo@gmail.com',
           password: 'password',
           firstName: 'Collector',
           lastName: 'One',

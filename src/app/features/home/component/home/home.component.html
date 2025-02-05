@@ -6,15 +6,15 @@
   <title>RecycleX - Home</title>
 </head>
 <body class="bg-gray-100">
-<!-- Header -->
+<!-- Navbar/Header -->
 <header class="bg-green-600 text-white shadow">
   <div class="container mx-auto flex items-center justify-between py-4 px-6">
     <div class="text-2xl font-bold">
       RecycleX
     </div>
-    <nav class="space-x-6">
-      <a routerLink="/login" class="hover:text-green-200">Login</a>
-      <a routerLink="/signup" class="hover:text-green-200">Register</a>
+    <nav class="space-x-4">
+      <a routerLink="/dashboard" class="hover:text-green-200">Dashboard</a>
+      <button (click)="onLogout()" class="hover:text-green-200 focus:outline-none">Logout</button>
     </nav>
   </div>
 </header>
@@ -28,10 +28,10 @@
         Connecting you with sustainable recycling solutions for a greener tomorrow.
       </p>
       <div class="space-x-4">
-        <a href="/signup" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded transition duration-200">
+        <a routerLink="/signup" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded transition duration-200">
           Get Started
         </a>
-        <a href="/learn-more" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded transition duration-200">
+        <a routerLink="/learn-more" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded transition duration-200">
           Learn More
         </a>
       </div>
