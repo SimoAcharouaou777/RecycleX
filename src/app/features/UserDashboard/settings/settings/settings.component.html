@@ -1,0 +1,42 @@
+<app-sidebar></app-sidebar>
+<section class="py-10 px-6 bg-gray-50 min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-2xl rounded-xl p-6">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-green-700">Settings</h1>
+        <p class="text-gray-600">Update your password or delete your account below.</p>
+      </div>
+      <!-- Password Update Form -->
+      <form [formGroup]="settingsForm" (ngSubmit)="onUpdatePassword()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-gray-700 mb-2">New Password</label>
+            <input type="password" formControlName="newPassword" placeholder="New Password"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Confirm Password</label>
+            <input type="password" formControlName="confirmPassword" placeholder="Confirm Password"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+        </div>
+        <div class="mt-6">
+          <button type="submit"
+                  class="w-full p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+            Update Password
+          </button>
+        </div>
+      </form>
+      <!-- Delete Account Section -->
+      <div class="mt-10 border-t pt-6">
+        <h2 class="text-2xl font-bold text-red-600 mb-4">Delete Account</h2>
+        <p class="text-gray-600 mb-4">Warning: This action cannot be undone.</p>
+        <button (click)="onDeleteAccount()"
+                class="w-full p-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

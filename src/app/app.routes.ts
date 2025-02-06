@@ -10,6 +10,7 @@ import {
   RewardsDashboardComponent
 } from "./features/UserDashboard/rewards-dashboard/rewards-dashboard/rewards-dashboard.component";
 import {MyRequestsComponent} from "./features/UserDashboard/my-requests/my-requests/my-requests.component";
+import {SettingsComponent} from "./features/UserDashboard/settings/settings/settings.component";
 
 export const routes: Routes = [
   { path: 'login' , component: LoginComponent },
@@ -24,6 +25,7 @@ export const routes: Routes = [
       { path: 'profile', component: MyProfileComponent },
       { path: 'rewards', component: RewardsDashboardComponent },
       { path: 'my-requests', component: MyRequestsComponent },
+      { path: 'settings', component: SettingsComponent },
       { path: '', redirectTo: 'profile', pathMatch: 'full' }
     ],
   }

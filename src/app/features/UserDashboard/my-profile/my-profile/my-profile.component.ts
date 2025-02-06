@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {SidebarComponent} from "../../../../shared/sidebar/sidebar.component";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {User, UserService} from "../../../../shared/services/userService/user.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-my-profile',
@@ -17,29 +18,34 @@ import {User, UserService} from "../../../../shared/services/userService/user.se
 export class MyProfileComponent implements OnInit{
   profileForm!: FormGroup;
   previewImage: string = '';
+  userSubscription!: Subscription;
 
   constructor(private fb: FormBuilder, private userService: UserService) { }
 
   ngOnInit(): void {
-    const currentUser = this.userService.getUser() || {
-      firstName: '',
-      lastName: '',
-      email: '',
-      address: '',
-      phone: '',
-      dob: '',
-      profileImage: ''
-    };
-    this.profileForm = this.fb.group({
-      firstName: [currentUser.firstName, Validators.required ],
-      lastName: [currentUser.lastName, Validators.required ],
-      email: [currentUser.email, [ Validators.required, Validators.email ]],
-      address: [currentUser.address, Validators.required ],
-      phone: [currentUser.phone, Validators.required ],
-      dob: [currentUser.dob, Validators.required ],
+     this.profileForm = this.fb.group({
+      firstName: ['', Validators.required ],
+      lastName: ['', Validators.required ],
+      email: ['',  [Validators.required, Validators.email ]],
+      address: ['', Validators.required ],
+      phone: ['', Validators.required ],
+      dob: ['', Validators.required ],
       profileImage: [null]
     });
-    this.previewImage = currentUser.profileImage || '';
+
+    this.userSubscription = this.userService.user$.subscribe((currentUser) => {
+      if(currentUser) {
+        this.profileForm.patchValue({
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          email: currentUser.email,
+          address: currentUser.address,
+          phone: currentUser.phone,
+          dob: currentUser.dob,
+        });
+        this.previewImage = currentUser.profileImage || '';
+      }
+    });
   }
 
   onFileSelected(event: any): void {
@@ -61,6 +67,12 @@ export class MyProfileComponent implements OnInit{
         profileImage: this.profileForm.value.profileImage || this.previewImage || ''
       };
       this.userService.setUser(updatedUser);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if(this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 }

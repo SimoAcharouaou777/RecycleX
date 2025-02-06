@@ -8,7 +8,9 @@ export interface User {
   address: string;
   phone: string;
   dob: string;
+  password: string;
   profileImage?: string;
+
 
 }
 @Injectable({
@@ -33,6 +35,11 @@ export class UserService {
 
   getUser(): User | null {
     return this.userSubject.getValue();
+  }
+
+  deleteUser(): void {
+    localStorage.removeItem(this.localStorageKey);
+    this.userSubject.next(null);
   }
 
 
