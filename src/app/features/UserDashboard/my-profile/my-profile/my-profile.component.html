@@ -1,0 +1,78 @@
+<app-sidebar></app-sidebar>
+<section class="py-10 px-6 bg-gray-50 min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow-2xl rounded-xl p-6">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-green-700">Profile</h1>
+        <p class="text-gray-600">Update your profile details below.</p>
+      </div>
+      <!-- Cover & Profile Picture Section -->
+      <div class="relative">
+        <!-- Cover Image (static background) -->
+        <div class="w-full h-48 bg-cover bg-center rounded-t-xl"
+             style="background-image: url('https://images.unsplash.com/photo-1449844908441-8829872d2607?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080')">
+        </div>
+        <!-- Profile Picture (overlapping cover) -->
+        <div class="absolute -bottom-12 left-6">
+          <div class="relative">
+            <img [src]="previewImage || 'https://readymadeui.com/profile.webp'" alt="Profile" class="w-24 h-24 rounded-full border-4 border-white">
+            <div class="absolute bottom-0 right-0 bg-white rounded-full p-1">
+              <input type="file" id="upload_profile" (change)="onFileSelected($event)" hidden>
+              <label for="upload_profile" class="cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Spacer for Profile Picture -->
+      <div class="h-16"></div>
+      <!-- Profile Form -->
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-gray-700 mb-2">First Name</label>
+            <input type="text" formControlName="firstName" placeholder="First Name"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Last Name</label>
+            <input type="text" formControlName="lastName" placeholder="Last Name"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Email</label>
+            <input type="email" formControlName="email" placeholder="you@example.com"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+        </div>
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-gray-700 mb-2">Address</label>
+            <input type="text" formControlName="address" placeholder="123 Main St, City"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Phone Number</label>
+            <input type="tel" formControlName="phone" placeholder="+1234567890"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+          <div>
+            <label class="block text-gray-700 mb-2">Date of Birth</label>
+            <input type="date" formControlName="dob"
+                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+        </div>
+        <div class="mt-6">
+          <button type="submit"
+                  class="w-full p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200">
+            Save Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
