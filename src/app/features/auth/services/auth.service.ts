@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import {Observable, of} from "rxjs";
+import {UserService} from "../../../shared/services/userService/user.service";
 
 export interface User {
-  firstName?: string;
-  lastName?: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  address?: string;
-  phone?: string;
-  dob?: string;
+  address: string;
+  phone: string;
+  dob: string;
   profilePicture?: File | null;
   role?: 'user' | 'collector';
 }
@@ -19,7 +20,9 @@ export interface User {
 export class AuthService {
   private localStorageKey = "recyclex_users";
 
-  constructor() { this.seedCollectors() }
+  constructor(private userService: UserService) {
+    this.seedCollectors() ;
+  }
 
   login(credentials: { email: string; password: string }): Observable<boolean> {
     const users : User[] = JSON.parse(localStorage.getItem(this.localStorageKey) || '[]');
@@ -27,6 +30,7 @@ export class AuthService {
     if(user) {
       console.log('Login successful for ', credentials.email);
       localStorage.setItem('currentUser', JSON.stringify(user));
+      this.userService.setUser(user);
       return of(true);
     } else {
       console.log('Invalid login attempt for ', credentials.email);
@@ -45,23 +49,14 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('currentUser');
+    this.userService.setUser(null);
     console.log('User logged out');
   }
   isAuthenticated(): boolean {
     return localStorage.getItem('currentUser') !== null;
   }
 
-  updateProfile(updatedUser: User): Observable<boolean> {
-    return of(true);
-  }
 
-  deleteAccount(email: string): Observable<boolean> {
-    return of(true);
-  }
-
-  getCollectorInfo(): User | null {
-    return null;
-  }
 
   private seedCollectors(): void {
     let users: User[] = JSON.parse(localStorage.getItem(this.localStorageKey) || '[]');

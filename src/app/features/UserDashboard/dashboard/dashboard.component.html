@@ -1,44 +1,10 @@
-<nav class="bg-green-800 h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-sans tracking-wide overflow-auto">
-  <!-- User Profile Section -->
-  <div class="flex items-center gap-4 cursor-pointer mb-6">
-    <img src="https://readymadeui.com/profile.webp" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white" />
-    <div>
-      <!-- You can later bind these to the logged in user's details -->
-      <p class="text-sm text-white">John Doe</p>
-      <p class="text-xs text-gray-300">johndoe23.com</p>
-    </div>
+<div class="flex">
+
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="ml-[250px] flex-1 p-8">
+    <h1 class="text-3xl font-bold text-green-700 mb-4">Dashboard</h1>
+    <router-outlet></router-outlet>
   </div>
-
-  <hr class="my-6 border-gray-400" />
-
-  <!-- Navigation Links -->
-  <ul class="space-y-3">
-    <li>
-      <a routerLink="/dashboard" class="text-white text-sm flex items-center hover:bg-green-700 rounded px-4 py-3 transition-all">
-        <!-- Dashboard Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5 mr-4" viewBox="0 0 512 512">
-          <path d="M197.332 170.668h-160C16.746 170.668 0 153.922 0 133.332v-96C0 16.746 16.746 0 37.332 0h160c20.59 0 37.336 16.746 37.336 37.332v96c0 20.59-16.746 37.336-37.336 37.336zM37.332 32A5.336 5.336 0 0 0 32 37.332v96a5.337 5.337 0 0 0 5.332 5.336h160a5.338 5.338 0 0 0 5.336-5.336v-96A5.337 5.337 0 0 0 197.332 32zm160 480h-160C16.746 512 0 495.254 0 474.668v-224c0-20.59 16.746-37.336 37.332-37.336h160c20.59 0 37.336 16.746 37.336 37.336v224c0 20.586-16.746 37.332-37.336 37.332zm-160-266.668A5.337 5.337 0 0 0 32 250.668v224A5.336 5.336 0 0 0 37.332 480h160a5.337 5.337 0 0 0 5.336-5.332v-224a5.338 5.338 0 0 0-5.336-5.336zM474.668 512h-160c-20.59 0-37.336-16.746-37.336-37.332v-96c0-20.59 16.746-37.336 37.336-37.336h160c20.586 0 37.332 16.746 37.332 37.336v96C512 495.254 495.254 512 474.668 512zm-160-138.668a5.338 5.338 0 0 0-5.336 5.336v96a5.337 5.337 0 0 0 5.336 5.332h160a5.336 5.336 0 0 0 5.332-5.332v-96a5.337 5.337 0 0 0-5.332-5.336zm160-74.664h-160c-20.59 0-37.336-16.746-37.336-37.336v-224C277.332 16.746 294.078 0 314.668 0h160C495.254 0 512 16.746 512 37.332v224c0 20.59-16.746 37.336-37.332 37.336zM314.668 32a5.337 5.337 0 0 0-5.336 5.332v224a5.338 5.338 0 0 0 5.336 5.336h160a5.337 5.337 0 0 0 5.332-5.336v-224A5.336 5.336 0 0 0 474.668 32z"/>
-        </svg>
-        <span>Dashboard</span>
-      </a>
-    </li>
-    <li>
-      <a routerLink="/profile" class="text-white text-sm flex items-center hover:bg-green-700 rounded px-4 py-3 transition-all">
-        <!-- Profile Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5 mr-4" viewBox="0 0 512 512">
-          <path d="M256 256c70.692 0 128-57.308 128-128S326.692 0 256 0 128 57.308 128 128s57.308 128 128 128zm0 64c-84.149 0-256 42.322-256 126.938V512h512v-65.062C512 362.322 340.149 320 256 320z"/>
-        </svg>
-        <span>Profile</span>
-      </a>
-    </li>
-    <li>
-      <button  class="w-full text-left text-white text-sm flex items-center hover:bg-green-700 rounded px-4 py-3 transition-all focus:outline-none">
-        <!-- Logout Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-5 h-5 mr-4" viewBox="0 0 512 512">
-          <path d="M497 273L329 441c-15 15-41 4-41-17V304H120c-13 0-24-11-24-24v-32c0-13 11-24 24-24h168V88c0-21 26-32 41-17l168 168c9 9 9 24 0 33zM64 64h96v384H64c-35 0-64-29-64-64V128c0-35 29-64 64-64z"/>
-        </svg>
-        <span>Logout</span>
-      </button>
-    </li>
-  </ul>
-</nav>
+</div>

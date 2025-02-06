@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PointsDisplayComponent } from './points-display.component';
+import { MyRequestsComponent } from './my-requests.component';
 
-describe('PointsDisplayComponent', () => {
-  let component: PointsDisplayComponent;
-  let fixture: ComponentFixture<PointsDisplayComponent>;
+describe('MyRequestsComponent', () => {
+  let component: MyRequestsComponent;
+  let fixture: ComponentFixture<MyRequestsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PointsDisplayComponent]
+      imports: [MyRequestsComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(PointsDisplayComponent);
+    fixture = TestBed.createComponent(MyRequestsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
