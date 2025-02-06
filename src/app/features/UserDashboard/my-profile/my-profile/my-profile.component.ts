@@ -62,11 +62,16 @@ export class MyProfileComponent implements OnInit{
 
   onSubmit(): void {
     if(this.profileForm.valid) {
+      const currentUser = this.userService.getUser();
+      if(!currentUser) {
+        return;
+      }
       const updatedUser: User = {
+        ...currentUser,
         ...this.profileForm.value,
-        profileImage: this.profileForm.value.profileImage || this.previewImage || ''
+        profileImage: this.profileForm.value.profileImage || this.previewImage || currentUser.profileImage
       };
-      this.userService.setUser(updatedUser);
+      this.userService.updateUser(updatedUser);
     }
   }
 

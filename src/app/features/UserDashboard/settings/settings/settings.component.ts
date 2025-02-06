@@ -38,7 +38,7 @@ export class SettingsComponent implements OnInit{
       const currentUser = this.userService.getUser();
       if(currentUser) {
         const updatedUser: User = { ...currentUser, password: newPassword };
-        this.userService.setUser(updatedUser);
+        this.userService.updateUser(updatedUser);
         alert('Password updated successfully!');
       } else {
         alert('No user found!');

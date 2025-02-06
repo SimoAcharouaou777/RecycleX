@@ -29,7 +29,6 @@ export class SignupComponent implements OnInit{
       address:['', Validators.required],
       phone: ['', Validators.required],
       dob:['', Validators.required],
-      profilePicture: [null]
     });
   }
 
