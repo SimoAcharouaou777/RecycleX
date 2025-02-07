@@ -11,6 +11,9 @@ import {
 } from "./features/UserDashboard/rewards-dashboard/rewards-dashboard/rewards-dashboard.component";
 import {MyRequestsComponent} from "./features/UserDashboard/my-requests/my-requests/my-requests.component";
 import {SettingsComponent} from "./features/UserDashboard/settings/settings/settings.component";
+import {
+  MyRequestProgressComponent
+} from "./features/UserDashboard/my-request-progress/my-request-progress/my-request-progress.component";
 
 export const routes: Routes = [
   { path: 'login' , component: LoginComponent },
@@ -26,6 +29,7 @@ export const routes: Routes = [
       { path: 'rewards', component: RewardsDashboardComponent },
       { path: 'my-requests', component: MyRequestsComponent },
       { path: 'settings', component: SettingsComponent },
+      { path: 'my-requests-progress', component: MyRequestProgressComponent},
       { path: '', redirectTo: 'profile', pathMatch: 'full' }
     ],
   }
