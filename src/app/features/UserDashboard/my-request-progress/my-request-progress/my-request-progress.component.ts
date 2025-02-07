@@ -41,10 +41,11 @@ export class MyRequestProgressComponent implements OnInit{
   }
 
   saveRequest(req: Request) {
-    if(req.weight < 1000) {
-      alert('Minimum weight should be 1000 grams');
+    if(req.weight < 1000 || req.weight > 10000) {
+      alert('Minimum weight should be 1000 grams, and maximum weight should be 10000 grams (10 kg)');
       return;
     }
+
     req.isEditing = false;
     const index = this.progressRequests.findIndex(
       r => r.address === req.address && r.userEmail === req.userEmail

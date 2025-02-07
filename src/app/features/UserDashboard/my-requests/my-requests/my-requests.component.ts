@@ -115,6 +115,12 @@ export class MyRequestsComponent implements OnInit{
         return;
       }
 
+      const weight = this.requestForm.get('weight')?.value;
+      if(weight > 10000) {
+        alert('Maximum weight should be 10 kg (10,000 grams)');
+        return;
+      }
+
       const requestData: Request = {
         userEmail: currentUser.email,
         ...this.requestForm.value,
