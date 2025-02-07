@@ -1,0 +1,97 @@
+<app-sidebar></app-sidebar>
+<section class="py-10 px-6 bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold text-green-700 text-center mb-8">My Request Progress</h1>
+
+    <div *ngIf="progressRequests.length === 0" class="text-center text-gray-500">
+      No progress requests found.
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        *ngFor="let req of progressRequests"
+        class="bg-white shadow-xl rounded-xl p-6 border-l-8 border-green-500"
+      >
+        <!-- If the request is in edit mode, show input fields; otherwise, display its details -->
+        <div *ngIf="req.isEditing; else viewMode">
+          <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Waste Types</label>
+            <!-- For simplicity, using a text input; you might choose a multi-select in a real app -->
+            <input type="text" [(ngModel)]="req.wasteTypes" class="w-full p-2 border rounded" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Weight (g)</label>
+            <input type="number"
+                   [(ngModel)]="req.weight"
+                   class="w-full p-2 border rounded"
+                   [min]="1000"
+                   required />
+            <div *ngIf="req.isEditing && req.weight < 1000" class="text-red-500 text-sm mt-1">
+              Weight should be at least 1000 g.
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Address</label>
+            <input type="text" [(ngModel)]="req.address" class="w-full p-2 border rounded" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Date</label>
+            <input type="date" [(ngModel)]="req.date" class="w-full p-2 border rounded" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Time Slot</label>
+            <input type="text" [(ngModel)]="req.timeSlot" class="w-full p-2 border rounded" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Notes</label>
+            <textarea [(ngModel)]="req.notes" class="w-full p-2 border rounded" rows="2"></textarea>
+          </div>
+        </div>
+        <ng-template #viewMode>
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-green-600">{{ req.wasteTypes.join(', ') }}</h2>
+            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+              {{ req.status }}
+            </span>
+          </div>
+          <p class="text-gray-700">
+            <span class="font-semibold">Weight:</span> {{ req.weight }} g
+          </p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Address:</span> {{ req.address }}
+          </p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Date:</span> {{ req.date | date:'mediumDate' }}
+          </p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Time Slot:</span> {{ req.timeSlot }}
+          </p>
+          <p class="text-gray-700">
+            <span class="font-semibold">Notes:</span> {{ req.notes || 'None' }}
+          </p>
+        </ng-template>
+
+        <!-- Action Buttons (only shown if status is 'PENDING') -->
+        <div class="mt-4 flex justify-end gap-2" *ngIf="req.status === 'PENDING'">
+          <!-- If not in edit mode, show the "Edit" button -->
+          <button *ngIf="!req.isEditing"
+                  (click)="editRequest(req)"
+                  class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
+            Edit
+          </button>
+          <!-- If in edit mode, show the "Save" button -->
+          <button *ngIf="req.isEditing"
+                  (click)="saveRequest(req)"
+                  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200">
+            Save
+          </button>
+          <!-- Delete button -->
+          <button (click)="deleteRequest(req)"
+                  class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

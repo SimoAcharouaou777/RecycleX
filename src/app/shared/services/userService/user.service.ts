@@ -22,6 +22,8 @@ export class UserService {
   private currentUserKey = 'currentUser';
   private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
+  private emailChangeSubject = new BehaviorSubject<{ oldEmail: string, newEmail: string} | null>(null);
+  emailChange$ = this.emailChangeSubject.asObservable();
 
   constructor() {
     const storedUser = localStorage.getItem(this.currentUserKey);
@@ -76,6 +78,10 @@ export class UserService {
       users[index] = updatedUser;
       localStorage.setItem(this.localStorageKey, JSON.stringify(users));
     }
+  }
+
+  notifyEmailChange(oldEmail: string, newEmail: string): void {
+    this.emailChangeSubject.next({ oldEmail, newEmail });
   }
 
 

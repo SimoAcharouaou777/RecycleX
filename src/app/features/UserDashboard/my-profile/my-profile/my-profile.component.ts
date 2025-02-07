@@ -66,12 +66,19 @@ export class MyProfileComponent implements OnInit{
       if(!currentUser) {
         return;
       }
+      const oldEmail = currentUser.email;
+      const newEmail = this.profileForm.value.email;
+
       const updatedUser: User = {
         ...currentUser,
         ...this.profileForm.value,
         profileImage: this.profileForm.value.profileImage || this.previewImage || currentUser.profileImage
       };
       this.userService.updateUser(updatedUser);
+
+      if(oldEmail !== newEmail) {
+        this.userService.notifyEmailChange(oldEmail, newEmail);
+      }
     }
   }
 
