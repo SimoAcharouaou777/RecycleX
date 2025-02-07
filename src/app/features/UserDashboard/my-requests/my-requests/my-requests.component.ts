@@ -131,6 +131,16 @@ export class MyRequestsComponent implements OnInit{
   }
 
   progressRequest(req: Request) {
+    const currentUser = this.userService.getUser();
+    if(!currentUser) return;
+    let allRequests = JSON.parse(localStorage.getItem('progressRequests') || '[]') as Request[];
+    const userProgressRequests = allRequests.filter(r => r.userEmail === currentUser.email && r.status === 'PENDING');
+
+    if(userProgressRequests.length >= 3) {
+      alert('You can only have 3 progress up to 3 requests at a time');
+      return;
+    }
+
     this.removeFromLocalStorage('pendingRequests', req);
     this.saveUniqueToLocalStorage('progressRequests', req);
     this.myRequests = this.myRequests.filter(r => r !== req);
@@ -143,8 +153,18 @@ export class MyRequestsComponent implements OnInit{
   progressAllRequests() {
     const currentUser = this.userService.getUser();
     if (!currentUser) return;
+
     let pendingRequests = JSON.parse(localStorage.getItem('pendingRequests') || '[]') as Request[];
     const userPending = pendingRequests.filter(r => r.userEmail === currentUser.email);
+
+    let progressRequests = JSON.parse(localStorage.getItem('progressRequests') || '[]') as Request[];
+    const userProgressRequests = progressRequests.filter(r => r.userEmail === currentUser.email && r.status === 'PENDING');
+
+    if(userProgressRequests.length >= 3) {
+      alert('You can only have 3 progress up to 3 requests at a time');
+      return;
+    }
+
     userPending.forEach(req => {
       this.removeFromLocalStorage('pendingRequests', req);
       this.saveUniqueToLocalStorage('progressRequests', req);
