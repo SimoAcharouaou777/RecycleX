@@ -5,10 +5,14 @@ import {state} from "@angular/animations";
 
 export interface RequestState {
   requests: Request[];
+  loading: boolean;
+  error: string | null ;
 }
 
 export const initialState: RequestState = {
-  requests: []
+  requests: [],
+  loading: false,
+  error: null
 };
 
 export const requestReducer = createReducer(

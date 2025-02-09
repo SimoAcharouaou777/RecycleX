@@ -23,7 +23,12 @@
             <div class="flex flex-wrap gap-4">
               <ng-container *ngFor="let type of wasteTypes">
                 <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" [value]="type" (change)="onWasteTypeChange($event, type)" class="form-checkbox h-5 w-5 text-green-600">
+                  <input
+                    type="checkbox"
+                    [value]="type"
+                    (change)="onWasteTypeChange($event, type)"
+                    class="form-checkbox h-5 w-5 text-green-600"
+                  />
                   <span class="text-gray-800">{{ type }}</span>
                 </label>
               </ng-container>
@@ -32,13 +37,28 @@
               Please select at least one waste type.
             </div>
           </div>
-          <!-- Estimated Weight -->
-          <div>
-            <label class="block text-gray-700 mb-2 font-medium">Estimated Weight (g)</label>
-            <input type="number" formControlName="weight" placeholder="e.g., 1500"
-                   class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-            <div *ngIf="requestForm.get('weight')?.touched && requestForm.get('weight')?.invalid" class="text-red-500 text-sm mt-2">
-              Minimum weight is 1000 g.
+          <!-- Individual Weight Inputs -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div *ngFor="let type of selectedWasteTypes" class="mb-4">
+              <label class="block text-gray-700 mb-2 font-medium"> {{ type }}  Weight (g)</label>
+              <input
+                type="number"
+                [formControlName]="'weight_' + type"
+                [placeholder]="'Enter ' + type + ' weight'"
+                required
+                class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <div *ngIf="requestForm.get('weight_' + type)?.touched && requestForm.get('weight_' +type)?.invalid"
+                   class="text-red-500 text-sm mt-2">
+                Minimum weight is 1000 g.
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <p class="font-medium">Total Weight: {{ totalWeight }} g </p>
+            <div *ngIf="totalWeight > 10000" class="text-red-500 text-sm">
+              Total weight exceeds 10kg limit
             </div>
           </div>
         </div>
@@ -91,52 +111,102 @@
   </div>
 
   <!-- My Collection Requests Section -->
-  <div class="mt-12">
-    <h2 class="text-2xl font-bold text-green-700 text-center mb-4">My Collection Requests</h2>
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold text-green-700 text-center mb-8">My Requests</h1>
 
+    <!-- No Requests Found -->
     <div *ngIf="myRequests.length === 0" class="text-center text-gray-500">
       No requests found.
     </div>
 
-    <!-- Bulk Actions -->
-    <div *ngIf="myRequests.length > 0" class="flex justify-center gap-4 mb-6">
-      <button (click)="progressAllRequests()"
-              class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200">
-        Progress All
-      </button>
-      <button (click)="deleteAllRequests()"
-              class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition duration-200">
-        Delete All
-      </button>
-    </div>
-
     <!-- Requests Grid -->
-    <div *ngIf="myRequests.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let req of myRequests"
-           class="bg-white shadow-xl rounded-xl p-6 border-l-8 border-green-600 relative">
-        <div class="absolute top-3 right-3 bg-gray-100 px-3 py-1 rounded-full text-sm font-semibold">
-          {{ req.status }}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        *ngFor="let req of myRequests"
+        class="bg-white shadow-xl rounded-xl p-6 border-l-8"
+        [ngClass]="{
+          'border-yellow-500': req.status === 'PENDING',
+          'border-blue-500': req.status === 'In Progress',
+          'border-green-500': req.status === 'Validated',
+          'border-red-500': req.status === 'Rejected'
+        }"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-green-600">
+            {{ getWasteTypesString(req) }}
+          </h2>
+          <span class="px-3 py-1 rounded-full text-sm font-medium"
+                [ngClass]="{
+                  'bg-yellow-100 text-yellow-700': req.status === 'PENDING',
+                  'bg-blue-100 text-blue-700': req.status === 'In Progress',
+                  'bg-green-100 text-green-700': req.status === 'Validated',
+                  'bg-red-100 text-red-700': req.status === 'Rejected'
+                }">
+            {{ req.status }}
+          </span>
         </div>
-        <h3 class="text-xl font-bold text-green-600 mb-2">{{ req.wasteTypes.join(', ') }}</h3>
-        <p class="text-gray-700"><span class="font-semibold">Weight:</span> {{ req.weight }} g</p>
-        <p class="text-gray-700"><span class="font-semibold">Address:</span> {{ req.address }}</p>
-        <p class="text-gray-700"><span class="font-semibold">Date:</span> {{ req.date | date:'mediumDate' }}</p>
-        <p class="text-gray-700"><span class="font-semibold">Time Slot:</span> {{ req.timeSlot }}</p>
+
+        <!-- Waste Details -->
+        <div class="space-y-2 mb-4">
+          <div *ngFor="let waste of req.wastes" class="text-gray-700">
+            <span class="font-semibold">{{ waste.type }}:</span> {{ waste.weight }}g
+          </div>
+          <div class="text-gray-700">
+            <span class="font-semibold">Total Weight:</span> {{ getTotalWeight(req.wastes) }}g
+          </div>
+        </div>
+
+        <!-- Address -->
+        <p class="text-gray-700">
+          <span class="font-semibold">Address:</span> {{ req.address || 'Not Provided' }}
+        </p>
+
+        <!-- Date -->
+        <p class="text-gray-700">
+          <span class="font-semibold">Date:</span> {{ req.date ? (req.date | date:'mediumDate') : 'Not Provided' }}
+        </p>
+
+        <!-- Time Slot -->
+        <p class="text-gray-700">
+          <span class="font-semibold">Time Slot:</span> {{ req.timeSlot || 'Not Provided' }}
+        </p>
+
+        <!-- Notes -->
+        <p class="text-gray-700">
+          <span class="font-semibold">Notes:</span> {{ req.notes || 'None' }}
+        </p>
 
         <!-- Action Buttons -->
-        <div class="mt-4 flex justify-between">
-          <button (click)="progressRequest(req)"
-                  class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">
+        <div class="flex justify-end gap-4 mb-6" *ngIf="myRequests.length > 1">
+          <button
+          (click)="progressAllRequests()"
+          class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-200 flex items-center gap-2"
+          >
+            <span> Progress All</span>
+          </button>
+          <button
+            (click)="deleteAllRequests()"
+            class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition duration-200 flex items-center gap-2"
+          >
+            <span> Delete All</span>
+          </button>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button
+            (click)="progressRequest(req)"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+          >
             Progress
           </button>
-          <button (click)="deleteRequest(req)"
-                  class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200">
+          <button
+            (click)="deleteRequest(req)"
+            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
+          >
             Delete
           </button>
         </div>
       </div>
     </div>
   </div>
-
 
 </section>

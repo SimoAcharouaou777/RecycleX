@@ -5,5 +5,5 @@ export const selectRequestState = createFeatureSelector<RequestState>('requests'
 
 export const selectAllRequests = createSelector(
   selectRequestState,
-  state => state.requests
+  (state: RequestState) => state.requests
 );

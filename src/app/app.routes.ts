@@ -14,6 +14,12 @@ import {SettingsComponent} from "./features/UserDashboard/settings/settings/sett
 import {
   MyRequestProgressComponent
 } from "./features/UserDashboard/my-request-progress/my-request-progress/my-request-progress.component";
+import {
+  CollectorDashboardComponent
+} from "./features/CollectorDashboard/collector-dashboard/collector-dashboard.component";
+import {
+  CollectionRequestsListComponent
+} from "./features/CollectorDashboard/collection-requests-list/collection-requests-list.component";
 
 export const routes: Routes = [
   { path: 'login' , component: LoginComponent },
@@ -32,6 +38,16 @@ export const routes: Routes = [
       { path: 'my-requests-progress', component: MyRequestProgressComponent},
       { path: '', redirectTo: 'profile', pathMatch: 'full' }
     ],
+  },
+  {
+    path: 'collector-dashboard',
+    component:CollectorDashboardComponent,
+    canActivate: [authGuard],
+    data: { roles: ['collector'] },
+    children: [
+      { path: 'requests', component: CollectionRequestsListComponent },
+      { path: '', redirectTo: 'requests', pathMatch: 'full'}
+    ]
   }
 ];
 
