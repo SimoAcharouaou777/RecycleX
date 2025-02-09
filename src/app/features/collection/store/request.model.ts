@@ -1,8 +1,6 @@
 export interface Request {
   userEmail: string;
-  wasteTypes: string[];
-  photos: string[];
-  weight: number;
+  wastes: { type: string; weight: number }[];
   address: string;
   date: string;
   timeSlot: string;

@@ -3,89 +3,137 @@
   <div class="max-w-6xl mx-auto">
     <h1 class="text-3xl font-bold text-green-700 text-center mb-8">My Request Progress</h1>
 
+    <!-- No Requests Found -->
     <div *ngIf="progressRequests.length === 0" class="text-center text-gray-500">
       No progress requests found.
     </div>
 
+    <!-- Requests Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Loop through each request -->
       <div
         *ngFor="let req of progressRequests"
-        class="bg-white shadow-xl rounded-xl p-6 border-l-8 border-green-500"
+        class="bg-white shadow-xl rounded-xl p-6 border-l-8"
+        [ngClass]="{
+          'border-yellow-500': req.status === 'PENDING',
+          'border-blue-500': req.status === 'In Progress',
+          'border-green-500': req.status === 'Validated',
+          'border-red-500': req.status === 'Rejected'
+        }"
       >
-        <!-- If the request is in edit mode, show input fields; otherwise, display its details -->
-        <div *ngIf="req.isEditing; else viewMode">
-          <div class="mb-4">
-            <label class="block text-gray-700 font-medium">Waste Types</label>
-            <!-- For simplicity, using a text input; you might choose a multi-select in a real app -->
-            <input type="text" [(ngModel)]="req.wasteTypes" class="w-full p-2 border rounded" />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 font-medium">Weight (g)</label>
-            <input type="number"
-                   [(ngModel)]="req.weight"
-                   class="w-full p-2 border rounded"
-                   [min]="1000"
-                   required />
-            <div *ngIf="req.isEditing && req.weight < 1000" class="text-red-500 text-sm mt-1">
-              Weight should be at least 1000 g.
+        <!-- Edit Mode -->
+        <div *ngIf="req.isEditing; else viewMode" class="space-y-4">
+          <!-- Waste Types and Weights -->
+          <div class="space-y-3">
+            <label class="block text-gray-700 font-medium">Waste Details</label>
+            <div *ngFor="let waste of req.wastes; let i = index" class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-600">{{ waste.type }}</span>
+                <div class="flex-1 ml-4">
+                  <input
+                    type="number"
+                    [(ngModel)]="req.wastes[i].weight"
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500"
+                    [min]="1000"
+                    [max]="10000"
+                    required
+                  />
+                  <div *ngIf="req.wastes[i].weight < 1000 || req.wastes[i].weight > 10000" class="text-red-500 text-sm mt-1">
+                    Weight must be between 1000g and 10000g
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="mb-4">
+          <!-- Address -->
+          <div>
             <label class="block text-gray-700 font-medium">Address</label>
-            <input type="text" [(ngModel)]="req.address" class="w-full p-2 border rounded" />
+            <input
+              type="text"
+              [(ngModel)]="req.address"
+              class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500"
+            />
           </div>
-          <div class="mb-4">
+          <!-- Date -->
+          <div>
             <label class="block text-gray-700 font-medium">Date</label>
-            <input type="date" [(ngModel)]="req.date" class="w-full p-2 border rounded" />
+            <input
+              type="date"
+              [(ngModel)]="req.date"
+              class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500"
+            />
           </div>
-          <div class="mb-4">
+          <!-- Time Slot -->
+          <div>
             <label class="block text-gray-700 font-medium">Time Slot</label>
-            <input type="text" [(ngModel)]="req.timeSlot" class="w-full p-2 border rounded" />
+            <input
+              type="text"
+              [(ngModel)]="req.timeSlot"
+              class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500"
+            />
           </div>
-          <div class="mb-4">
+          <!-- Notes -->
+          <div>
             <label class="block text-gray-700 font-medium">Notes</label>
-            <textarea [(ngModel)]="req.notes" class="w-full p-2 border rounded" rows="2"></textarea>
+            <textarea
+              [(ngModel)]="req.notes"
+              class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500"
+              rows="2"
+            ></textarea>
           </div>
         </div>
+
+        <!-- View Mode -->
         <ng-template #viewMode>
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-green-600">{{ req.wasteTypes.join(', ') }}</h2>
-            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+            <h2 class="text-xl font-bold text-green-600">
+              {{ getWasteTypesString(req) }}
+            </h2>
+            <span class="px-3 py-1 rounded-full text-sm font-medium"
+                  [ngClass]="{
+                    'bg-yellow-100 text-yellow-700': req.status === 'PENDING',
+                    'bg-blue-100 text-blue-700': req.status === 'In Progress',
+                    'bg-green-100 text-green-700': req.status === 'Validated',
+                    'bg-red-100 text-red-700': req.status === 'Rejected'
+                  }">
               {{ req.status }}
             </span>
           </div>
+          <!-- Waste Details -->
+          <div class="space-y-2 mb-4">
+            <div *ngFor="let waste of req.wastes" class="text-gray-700">
+              <span class="font-semibold">{{ waste.type }}:</span> {{ waste.weight }}g
+            </div>
+            <div class="text-gray-700">
+              <span class="font-semibold">Total Weight:</span> {{ getTotalWeight(req.wastes) }}g
+            </div>
+          </div>
           <p class="text-gray-700">
-            <span class="font-semibold">Weight:</span> {{ req.weight }} g
+            <span class="font-semibold">Address:</span> {{ req.address || 'Not Provided' }}
           </p>
           <p class="text-gray-700">
-            <span class="font-semibold">Address:</span> {{ req.address }}
+            <span class="font-semibold">Date:</span> {{ req.date ? (req.date | date:'mediumDate') : 'Not Provided' }}
           </p>
           <p class="text-gray-700">
-            <span class="font-semibold">Date:</span> {{ req.date | date:'mediumDate' }}
-          </p>
-          <p class="text-gray-700">
-            <span class="font-semibold">Time Slot:</span> {{ req.timeSlot }}
+            <span class="font-semibold">Time Slot:</span> {{ req.timeSlot || 'Not Provided' }}
           </p>
           <p class="text-gray-700">
             <span class="font-semibold">Notes:</span> {{ req.notes || 'None' }}
           </p>
         </ng-template>
 
-        <!-- Action Buttons (only shown if status is 'PENDING') -->
+        <!-- Action Buttons -->
         <div class="mt-4 flex justify-end gap-2" *ngIf="req.status === 'PENDING'">
-          <!-- If not in edit mode, show the "Edit" button -->
           <button *ngIf="!req.isEditing"
                   (click)="editRequest(req)"
                   class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
             Edit
           </button>
-          <!-- If in edit mode, show the "Save" button -->
           <button *ngIf="req.isEditing"
                   (click)="saveRequest(req)"
                   class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200">
             Save
           </button>
-          <!-- Delete button -->
           <button (click)="deleteRequest(req)"
                   class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
             Delete

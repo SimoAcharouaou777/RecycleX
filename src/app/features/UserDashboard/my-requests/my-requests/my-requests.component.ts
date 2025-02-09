@@ -1,13 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {SidebarComponent} from "../../../../shared/sidebar/sidebar.component";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {DatePipe, NgForOf, NgIf} from "@angular/common";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {Request} from "../../../collection/store/request.model";
 import {Store} from "@ngrx/store";
 import * as RequestActions from "../../../collection/store/request.action";
 import {UserService} from "../../../../shared/services/userService/user.service";
 import {Subscription} from "rxjs";
 import {selectAllRequests} from "../../../collection/store/request.selectors";
+
 
 
 @Component({
@@ -18,7 +19,8 @@ import {selectAllRequests} from "../../../collection/store/request.selectors";
     ReactiveFormsModule,
     NgForOf,
     NgIf,
-    DatePipe
+    DatePipe,
+    NgClass
   ],
   templateUrl: './my-requests.component.html',
   styleUrl: './my-requests.component.css'
@@ -26,6 +28,7 @@ import {selectAllRequests} from "../../../collection/store/request.selectors";
 export class MyRequestsComponent implements OnInit{
   requestForm!: FormGroup;
   wasteTypes: string[] = ['Plastic', 'Paper', 'Metal', 'Glass'];
+  selectedWasteTypes: string[] = [];
   timeSlots: string[] = [
     '09:00 AM - 10:00 AM',
     '10:00 AM - 11:00 AM',
@@ -45,8 +48,7 @@ export class MyRequestsComponent implements OnInit{
 
   ngOnInit(): void {
     this.requestForm = this.fb.group({
-      wasteTypes: [ [], Validators.required ],
-      weight: [null, [Validators.required, Validators.min(1000)]],
+      wastes: [],
       address: ['', Validators.required],
       date: ['', Validators.required],
       timeSlot: ['', Validators.required],
@@ -62,10 +64,10 @@ export class MyRequestsComponent implements OnInit{
 
     const sub = this.store.select(selectAllRequests).subscribe((requests: Request[]) => {
       const currentUser = this.userService.getUser();
-      if(currentUser && currentUser.email) {
-        const storedRequests = this.myRequests;
-        this.myRequests =  [...storedRequests, ...requests.filter(r => r.userEmail === currentUser.email)];
+      if(Array.isArray(requests) && currentUser && currentUser.email) {
+        this.myRequests = requests.filter(r => r.userEmail === currentUser.email);
       } else {
+        console.error('Invalid data structure for requests:', requests);
         this.myRequests = [];
       }
     });
@@ -93,37 +95,43 @@ export class MyRequestsComponent implements OnInit{
   }
 
   onWasteTypeChange(event: any, type: string): void {
-    const currentSelection: string[] = this.requestForm.get('wasteTypes')?.value || [];
     if(event.target.checked) {
-      if(!currentSelection.includes(type)) {
-        currentSelection.push(type);
-      }
+      this.selectedWasteTypes.push(type);
+      this.requestForm.addControl(`weight_${type}`, new FormControl(null, [Validators.required, Validators.min(1000)]));
     } else {
-      const index = currentSelection.indexOf(type);
+      const index = this.selectedWasteTypes.indexOf(type);
       if(index !== -1) {
-        currentSelection.splice(index, 1);
+        this.selectedWasteTypes.splice(index, 1);
+        this.requestForm.removeControl(`weight_${type}`);
       }
     }
-    this.requestForm.patchValue({ wasteTypes: currentSelection });
+  }
+
+  get totalWeight(): number {
+   return this.selectedWasteTypes.reduce((total, type) => {
+     const weight = this.requestForm.get(`weight_${type}`)?.value || 0;
+     return total + weight;
+   }, 0);
   }
 
 
   onSubmit(): void {
-    if(this.requestForm.valid) {
+    if(this.requestForm.valid && this.totalWeight <= 10000) {
       const currentUser = this.userService.getUser();
-      if(!currentUser) {
-        return;
-      }
+      if(!currentUser) return;
 
-      const weight = this.requestForm.get('weight')?.value;
-      if(weight > 10000) {
-        alert('Maximum weight should be 10 kg (10,000 grams)');
-        return;
-      }
+     const wastes = this.selectedWasteTypes.map(type => ({
+       type,
+       weight: this.requestForm.get(`weight_${type}`)?.value
+     }));
 
       const requestData: Request = {
         userEmail: currentUser.email,
-        ...this.requestForm.value,
+        wastes,
+        address: this.requestForm.get('address')?.value,
+        date: this.requestForm.get('date')?.value,
+        timeSlot: this.requestForm.get('timeSlot')?.value,
+        notes: this.requestForm.get('notes')?.value,
         status: 'PENDING'
       }
 
@@ -131,6 +139,7 @@ export class MyRequestsComponent implements OnInit{
       this.myRequests.push(requestData);
       this.saveToLocalStorage('pendingRequests', requestData);
       this.requestForm.reset();
+      this.selectedWasteTypes = [];
     } else {
       this.requestForm.markAllAsTouched();
     }
@@ -198,10 +207,19 @@ export class MyRequestsComponent implements OnInit{
     }
   }
 
-  removeFromLocalStorage(Key: string, request: Request) {
+  removeFromLocalStorage(Key: string, request: Request): void {
     let existingRequests = JSON.parse(localStorage.getItem(Key) || '[]') as Request[];
-    existingRequests = existingRequests.filter((r: Request) => r.userEmail !== request.userEmail || r.address !== request.address);
+    existingRequests = existingRequests.filter(r => r.address !== request.address || r.userEmail !== request.userEmail);
     localStorage.setItem(Key, JSON.stringify(existingRequests));
   }
+
+  getWasteTypesString(req: Request): string {
+      return req.wastes.map(w => w.type).join(', ');
+  }
+
+  getTotalWeight(wastes: { type: string; weight: number }[]): number {
+    return (wastes ?? []).reduce((total, waste) => total + waste.weight, 0);
+  }
+
 
 }
