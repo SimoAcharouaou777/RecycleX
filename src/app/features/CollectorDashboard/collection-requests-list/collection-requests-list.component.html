@@ -1,0 +1,87 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div
+    *ngFor="let req of requests"
+    class="bg-white shadow-lg rounded-xl p-6 border-l-8 transition-transform duration-300 hover:scale-[1.02]"
+    [ngClass]="{
+      'border-yellow-500': req.status === 'PENDING',
+      'border-blue-500': req.status === 'Occupied',
+      'border-green-500': req.status === 'Validated',
+      'border-red-500': req.status === 'Rejected'
+    }"
+  >
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-green-700">
+        {{ getWasteTypesString(req) }}
+      </h2>
+      <span
+        class="px-3 py-1 rounded-full text-sm font-medium"
+        [ngClass]="{
+          'bg-yellow-100 text-yellow-700': req.status === 'PENDING',
+          'bg-blue-100 text-blue-700': req.status === 'Occupied',
+          'bg-green-100 text-green-700': req.status === 'Validated',
+          'bg-red-100 text-red-700': req.status === 'Rejected'
+        }"
+      >
+        {{ req.status }}
+      </span>
+    </div>
+
+    <!-- Waste Details -->
+    <div class="space-y-2 mb-4">
+      <div *ngFor="let waste of req.wastes" class="text-gray-700">
+        <span class="font-semibold">{{ waste.type }}:</span> {{ waste.weight }}g
+      </div>
+      <div class="text-gray-700">
+        <span class="font-semibold">Total Weight:</span> {{ getTotalWeight(req.wastes) }}g
+      </div>
+    </div>
+
+    <!-- Address -->
+    <p class="text-gray-700">
+      <span class="font-semibold">Address:</span> {{ req.address }}
+    </p>
+
+    <!-- Date -->
+    <p class="text-gray-700">
+      <span class="font-semibold">Date:</span> {{ req.date | date:'mediumDate' }}
+    </p>
+
+    <!-- Time Slot -->
+    <p class="text-gray-700">
+      <span class="font-semibold">Time Slot:</span> {{ req.timeSlot }}
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="mt-4 flex justify-end gap-2">
+      <button
+        *ngIf="req.status === 'PENDING'"
+        (click)="occupyRequest(req)"
+        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+      >
+        Occupy
+      </button>
+      <button
+        *ngIf="req.status === 'Occupied'"
+        (click)="startCollection(req)"
+        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
+      >
+        Start Collection
+      </button>
+      <button
+        *ngIf="req.status === 'In Progress'"
+        (click)="validateRequest(req)"
+        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200"
+      >
+        Validate
+      </button>
+      <button
+        *ngIf="req.status !== 'Validated'"
+        (click)="rejectRequest(req)"
+        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200"
+      >
+        Reject
+      </button>
+    </div>
+  </div>
+</div>

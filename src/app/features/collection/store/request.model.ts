@@ -5,6 +5,6 @@ export interface Request {
   date: string;
   timeSlot: string;
   notes: string;
-  status?: 'PENDING' | 'Busy' | 'In Progress' | 'Validated' | 'Rejected';
+  status?: 'PENDING' | 'Occupied' | 'In Progress' | 'Validated' | 'Rejected';
   isEditing?: boolean;
 }

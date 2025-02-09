@@ -48,11 +48,14 @@ export class MyRequestsComponent implements OnInit{
 
   ngOnInit(): void {
     this.requestForm = this.fb.group({
-      wastes: [],
       address: ['', Validators.required],
       date: ['', Validators.required],
       timeSlot: ['', Validators.required],
       notes: ['']
+    });
+
+    this.wasteTypes.forEach(type => {
+      this.requestForm.addControl(`weight_${type}`, new FormControl(null, [Validators.min(1000)]));
     });
 
     const currentUser = this.userService.getUser();
@@ -63,11 +66,19 @@ export class MyRequestsComponent implements OnInit{
     }
 
     const sub = this.store.select(selectAllRequests).subscribe((requests: Request[]) => {
-      const currentUser = this.userService.getUser();
-      if(Array.isArray(requests) && currentUser && currentUser.email) {
-        this.myRequests = requests.filter(r => r.userEmail === currentUser.email);
+      if (Array.isArray(requests)) {
+        const currentUser = this.userService.getUser();
+        if(currentUser && currentUser.email) {
+          const storedRequests = this.myRequests;
+          this.myRequests = [
+            ...storedRequests,
+            ...requests.filter(r => r.userEmail === currentUser.email)
+          ];
+        } else {
+          console.error('Invalid data structure for requests: ', requests);
+          this.myRequests = [];
+        }
       } else {
-        console.error('Invalid data structure for requests:', requests);
         this.myRequests = [];
       }
     });
