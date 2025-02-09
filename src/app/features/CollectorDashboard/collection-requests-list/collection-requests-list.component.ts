@@ -1,8 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  CollectionRequest,
-  CollectionRequestService
-} from "../../../shared/services/collectorService/collection-request.service";
+
 import {DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {Request} from "../../collection/store/request.model";
 
@@ -37,6 +34,16 @@ export class CollectionRequestsListComponent implements OnInit{
 
   validateRequest(req: Request): void {
     req.status = 'Validated';
+
+    const pointsRates: { [Key: string]: number } = {
+      Plastic: 2, // 2 points per kg
+      Glass: 1,
+      Paper: 1,
+      Metal: 5
+    };
+    req.pointsEarned = req.wastes.reduce((totalPoints, waste) => {
+      return totalPoints + (pointsRates[waste.type] || 0) * (waste.weight / 1000);
+    }, 0);
     this.updateRequestStatus(req);
   }
   rejectRequest(req: Request): void {

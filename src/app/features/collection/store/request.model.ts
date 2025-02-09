@@ -7,4 +7,5 @@ export interface Request {
   notes: string;
   status?: 'PENDING' | 'Occupied' | 'In Progress' | 'Validated' | 'Rejected';
   isEditing?: boolean;
+  pointsEarned?: number;
 }
